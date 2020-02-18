@@ -36,7 +36,7 @@ def start(imgSize = 320, iTrain = True, sTrain = True) :
 
     #print('Building data generators')
 
-
+    print('Building models')
 
     imgEnc = iEncoder(iTrain, imgSize, imgTAds, imgVAds, numTrainImages, numValImages, trainDir, valDir)
 
@@ -58,7 +58,6 @@ def iEncoder(buildNew, imgSize, imgTAds, imgVAds, numTrainImages, numValImages, 
         autoTrainGen = autoTrainDataGen.flow_from_directory(tDir, target_size=(imgSize, imgSize), batch_size=batchSize, class_mode='input')
         autoValGen = autoTrainDataGen.flow_from_directory(vDir, target_size=(imgSize, imgSize), batch_size=batchSize, class_mode='input')
 
-        print('Building models')
         inSize = (imgSize, imgSize, 3)
         print('training image encoder')
         auto, enc = newImgModel(imgSize)
@@ -71,7 +70,10 @@ def iEncoder(buildNew, imgSize, imgTAds, imgVAds, numTrainImages, numValImages, 
 
 def sMod(buildNew) :
     if (buildNew) :
-        return newSentenceEncoder()
+        se = newSentenceEncoder()
+        se.compile(optimizer='adadelta', loss='binary_crossentropy')
+        
+        return se
     else :
         return loadNet('./Models/sntMod')
 

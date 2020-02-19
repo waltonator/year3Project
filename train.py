@@ -14,18 +14,20 @@ from netHandler import saveNet, loadNet
 
 
 
-def start(imgSize = 320, iTrain = True, sTrain = True) :
+def start(imgSize = 256, iTrain = True, sTrain = True) :
 
     print('Loading dataset')
 
     trainDat = json.load(open('../DataSets/VIST/dii/train.description-in-isolation.JSON'))
     valDat = json.load(open('../DataSets/VIST/dii/val.description-in-isolation.JSON'))
 
-    numTrainImages = 0
-    numValImages = 0
+    numTrainImages = 4268
+    numValImages = 1008
 
-    trainDir = 'C:/Users/walto/Documents/Uni/Project/DataSets/VIST/training'
-    valDir = 'C:/Users/walto/Documents/Uni/Project/DataSets/VIST/validation'
+    #trainDir = 'C:/Users/walto/Documents/Uni/Project/DataSets/VIST/training'
+    #valDir = 'C:/Users/walto/Documents/Uni/Project/DataSets/VIST/validation'
+    trainDir = 'C:/Users/walto/Documents/Uni/Project/DataSets/VIST/miniTraining'
+    valDir = 'C:/Users/walto/Documents/Uni/Project/DataSets/VIST/miniValidation'
 
     #imgTData = constructDataSet(trainDat, trainDir, imgSize)
     imgTAds = imageSet(trainDat, trainDir, numTrainImages)
@@ -72,7 +74,7 @@ def sMod(buildNew) :
     if (buildNew) :
         se = newSentenceEncoder()
         se.compile(optimizer='adadelta', loss='binary_crossentropy')
-        
+
         return se
     else :
         return loadNet('./Models/sntMod')
@@ -83,7 +85,7 @@ def imageSet(data, dir, counter) :
     for i in data :
         for item in i:
             imgData.append(dir + '/' + item.get('photo_flickr_id'))
-            counter += 1
+            #counter += 1
             #print(item.get('photo_flickr_id'))
             #image = cv2.imread(dir + '/' + str(item.get('photo_flickr_id')) + '.jpg')
             #if image is None :

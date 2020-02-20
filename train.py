@@ -20,8 +20,8 @@ def start(imgSize = 256, iTrain = True, sTrain = True) :
 
     print('Loading dataset')
 
-    trainDat = json.load(open('../DataSets/VIST/dii/train.description-in-isolation.JSON'))
-    valDat = json.load(open('../DataSets/VIST/dii/val.description-in-isolation.JSON'))
+    trainDat = json.load(open('../DataSets/VIST/dii/train.description-in-isolation.json'))
+    valDat = json.load(open('../DataSets/VIST/dii/val.description-in-isolation.json'))
 
     numTrainImages = 3781
     numValImages = 749

@@ -56,7 +56,7 @@ def start(imgSize = 256, iTrain = True, sTrain = True) :
 
     #for item in trainDat
 
-def iEncoder(buildNew, imgSize, imgTAds, imgVAds, numTrainImages, numValImages, tDir, vDir, epochs = 5, batchSize = 8) :
+def iEncoder(buildNew, imgSize, imgTAds, imgVAds, numTrainImages, numValImages, tDir, vDir, epochs = 15, batchSize = 8) :
     if (buildNew) :
         autoTrainDataGen = ImageDataGenerator(rescale=1. / 255, shear_range=0.2, zoom_range=0.2)
         autoTrainGen = autoTrainDataGen.flow_from_directory(tDir, target_size=(imgSize, imgSize), batch_size=batchSize, class_mode='input')

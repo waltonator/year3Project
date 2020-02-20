@@ -83,7 +83,7 @@ def newImgModel(inSize) :
     conv21 = Conv2D(128, (3, 3), activation='relu', padding='same')(up2)
     conv22 = Conv2D(128, (3, 3), activation='relu', padding='same')(conv21)
     up3 = UpSampling2D((2,2))(conv22)
-    decoded = Conv2D(3, (3, 3), activation='relu', padding='same')(up3)
+    decoded = Conv2D(3, (3, 3), activation='sigmoid', padding='same')(up3)
 
     autoencoder = Model(inputImg, decoded)
     encoder = Model(inputImg, encoded)

@@ -10,6 +10,7 @@ from keras.preprocessing.image import ImageDataGenerator, img_to_array
 from imageModel import newImgModel
 from sentenceModel import newSentenceEncoder
 from netHandler import saveNet, loadNet
+from PIL import ImageFile
 
 
 

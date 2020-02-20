@@ -15,19 +15,20 @@ from netHandler import saveNet, loadNet
 
 
 def start(imgSize = 256, iTrain = True, sTrain = True) :
+    ImageFile.LOAD_TRUNCATED_IMAGES = True
 
     print('Loading dataset')
 
     trainDat = json.load(open('../DataSets/VIST/dii/train.description-in-isolation.JSON'))
     valDat = json.load(open('../DataSets/VIST/dii/val.description-in-isolation.JSON'))
 
-    numTrainImages = 4268
-    numValImages = 1008
+    numTrainImages = 3781
+    numValImages = 749
 
     #trainDir = 'C:/Users/walto/Documents/Uni/Project/DataSets/VIST/training'
     #valDir = 'C:/Users/walto/Documents/Uni/Project/DataSets/VIST/validation'
-    trainDir = 'C:/Users/walto/Documents/Uni/Project/DataSets/VIST/miniTraining'
-    valDir = 'C:/Users/walto/Documents/Uni/Project/DataSets/VIST/miniValidation'
+    trainDir = '../DataSets/VIST/miniTraining'
+    valDir = '../DataSets/VIST/miniValidation'
 
     #imgTData = constructDataSet(trainDat, trainDir, imgSize)
     imgTAds = imageSet(trainDat, trainDir, numTrainImages)

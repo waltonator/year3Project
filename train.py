@@ -15,7 +15,7 @@ from PIL import ImageFile
 
 
 
-def start(imgSize = 256, iTrain = True, sTrain = True) :
+def start(imgSize = 256, iTrain = True, dTrain = False, sTrain = True) :
     ImageFile.LOAD_TRUNCATED_IMAGES = True
 
     print('Loading dataset')
@@ -31,9 +31,8 @@ def start(imgSize = 256, iTrain = True, sTrain = True) :
     trainDir = '../DataSets/VIST/miniTraining'
     valDir = '../DataSets/VIST/miniValidation'
 
-    #imgTData = constructDataSet(trainDat, trainDir, imgSize)
+
     imgTAds = imageSet(trainDat, trainDir, numTrainImages)
-    #imgVData = constructDataSet(valDat, valDir, imgSize)
     imgVAds = imageSet(valDat, valDir, numValImages)
 
     #inSize = (imgSize, imgSize, 3)
@@ -43,6 +42,10 @@ def start(imgSize = 256, iTrain = True, sTrain = True) :
     print('Building models')
 
     imgEnc = iEncoder(iTrain, imgSize, imgTAds, imgVAds, numTrainImages, numValImages, trainDir, valDir)
+
+    xDat, yDat = constructDataSet(trainDat, trainDir, imgSize, imgEnc, Dtrain)
+
+
 
     ##sntcModel = sMod(sTrain)
 
@@ -56,7 +59,7 @@ def start(imgSize = 256, iTrain = True, sTrain = True) :
 
     #for item in trainDat
 
-def iEncoder(buildNew, imgSize, imgTAds, imgVAds, numTrainImages, numValImages, tDir, vDir, epochs = 15, batchSize = 8) :
+def iEncoder(buildNew, imgSize, imgTAds, imgVAds, numTrainImages, numValImages, tDir, vDir, epochs = 15, batchSize = 64) :
     if (buildNew) :
         autoTrainDataGen = ImageDataGenerator(rescale=1. / 255, shear_range=0.2, zoom_range=0.2)
         autoTrainGen = autoTrainDataGen.flow_from_directory(tDir, target_size=(imgSize, imgSize), batch_size=batchSize, class_mode='input')
@@ -99,18 +102,31 @@ def imageSet(data, dir, counter) :
 
     return imgData
 
-def constructDataSet(data, dir, s, counter) :
-    imgData = []
-    data = data.get('annotations')
-    for i in data :
-        for item in i:
-            print(item.get('photo_flickr_id'))
-            image = cv2.imread(dir + '/' + str(item.get('photo_flickr_id')) + '.jpg')
-            if image is None :
-                image = cv2.imread(dir + '/' + str(item.get('photo_flickr_id')) + '.png')
-            image = cv2.resize(image, (s, s))
-            image = img_to_array(image)
-            imgData.append(image)
-    imgData = np.array(imgData, dtype="float") / 255.0
-
-    return imgData
+def constructDataSet(data, dir, s, model, buildNew, setName) :
+    xString = "./Models/" + setName + "x.npy"
+    yString = "./Models/" + setName + "y.npy"
+    if (buildNew) :
+        print("Constructing dataset")
+        xDat, yDat = [], []
+        data = data.get('annotations')
+        for i in data :
+            for item in i:
+                #print(item.get('photo_flickr_id'))
+                image = cv2.imread(dir + '/' + str(item.get('photo_flickr_id')) + '.jpg')
+                if image is None :
+                    image = cv2.imread(dir + '/' + str(item.get('photo_flickr_id')) + '.png')
+                if !(image is None) :
+                    image = cv2.resize(image, (s, s))
+                    image = img_to_array(image)
+                    image = [image]
+                    image = np.array(image, dtype="float") / 255.0
+                    rep = model.predict(image)
+                    xDat.append(item.get('text'))
+                    yDat.append(rep[0])
+                    #xDat.append(image)
+        xDat, yDat = np.array(xDat), np.array(yDat, dtype="float")
+        np.save(xString, xDat)
+        np.save(yString, yDat)
+        return xDat, yDat
+    else :
+        return np.load(xString), np.load(yString)

@@ -65,7 +65,7 @@ def newImgModel(inSize) :
     #net['fc7'] = DenseLayer(net['fc6'], num_units=4096)
     #d2 = Dense(2048)(d1)
     #net['fc8'] = DenseLayer(net['fc7'], num_units=1000, nonlinearity=None)
-    encoded = Dense(1024, activation='softmax')(d1)
+    encoded = Dense(1024, activation='relu')(d1)
     #net['prob'] = NonlinearityLayer(net['fc8'], softmax)
     #model.add(Activation('softmax'))
 

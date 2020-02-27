@@ -28,7 +28,7 @@ def newSentenceEncoder() :
     d3 = Dense(2048, activation= 'relu')(d2)
     #model.add(Dense(1024))
     #model.add(Activation('softmax'))
-    out = Dense(1024, activation= 'softmax')(d3)
+    out = Dense(1024, activation= 'relu')(d3)
 
     mod = Model(input, out)
     return mod

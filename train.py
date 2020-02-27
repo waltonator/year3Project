@@ -15,7 +15,7 @@ from PIL import ImageFile
 
 
 
-def start(imgSize = 256, iTrain = True, dTrain = False, sTrain = True) :
+def start(imgSize = 256, iTrain = True, dTrain = True, sTrain = False) :
     ImageFile.LOAD_TRUNCATED_IMAGES = True
 
     print('Loading dataset')
@@ -43,11 +43,10 @@ def start(imgSize = 256, iTrain = True, dTrain = False, sTrain = True) :
 
     imgEnc = iEncoder(iTrain, imgSize, imgTAds, imgVAds, numTrainImages, numValImages, trainDir, valDir)
 
-    xDat, yDat = constructDataSet(trainDat, trainDir, imgSize, imgEnc, Dtrain)
+    xt, yt = constructDataSet(trainDat, trainDir, imgSize, imgEnc, Dtrain, "train")
+    xv, yv = constructDataSet(valDat, valDir, imgSize, imgEnc, Dtrain, "val")
 
-
-
-    ##sntcModel = sMod(sTrain)
+    sntcModel = sMod(sTrain, xt, yt, xv, yv)
 
     #print('training model')
 
@@ -59,7 +58,7 @@ def start(imgSize = 256, iTrain = True, dTrain = False, sTrain = True) :
 
     #for item in trainDat
 
-def iEncoder(buildNew, imgSize, imgTAds, imgVAds, numTrainImages, numValImages, tDir, vDir, epochs = 15, batchSize = 64) :
+def iEncoder(buildNew, imgSize, imgTAds, imgVAds, numTrainImages, numValImages, tDir, vDir, epochs = 25, batchSize = 64) :
     if (buildNew) :
         autoTrainDataGen = ImageDataGenerator(rescale=1. / 255, shear_range=0.2, zoom_range=0.2)
         autoTrainGen = autoTrainDataGen.flow_from_directory(tDir, target_size=(imgSize, imgSize), batch_size=batchSize, class_mode='input')
@@ -68,18 +67,20 @@ def iEncoder(buildNew, imgSize, imgTAds, imgVAds, numTrainImages, numValImages, 
         inSize = (imgSize, imgSize, 3)
         print('training image encoder')
         auto, enc = newImgModel(imgSize)
-        auto.compile(optimizer='adadelta', loss='binary_crossentropy')
+        auto.compile(optimizer='adadelta', loss='mean_squared_error')
         auto.fit_generator(autoTrainGen, epochs=epochs, validation_data=autoValGen)
         saveNet(enc, './Models/imgEnc')
         return enc
     else :
         return loadNet('./Models/imgEnc')
 
-def sMod(buildNew) :
+def sMod(buildNew, xt, yt, xv, yv, bs = 64) :
     if (buildNew) :
+        print('training sentence encoder')
         se = newSentenceEncoder()
-        se.compile(optimizer='adadelta', loss='binary_crossentropy')
-
+        se.compile(optimizer='adadelta', loss='mean_squared_error')
+        se.fit(xDat, yDat, batch_size= bs, epochs= 25, validation_data=(xv, yv))
+        saveNet(se, './Models/sntMod')
         return se
     else :
         return loadNet('./Models/sntMod')

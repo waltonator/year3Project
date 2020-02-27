@@ -115,7 +115,7 @@ def constructDataSet(data, dir, s, model, buildNew, setName) :
                 image = cv2.imread(dir + '/' + str(item.get('photo_flickr_id')) + '.jpg')
                 if image is None :
                     image = cv2.imread(dir + '/' + str(item.get('photo_flickr_id')) + '.png')
-                if !(image is None) :
+                if (image is not None) :
                     image = cv2.resize(image, (s, s))
                     image = img_to_array(image)
                     image = [image]

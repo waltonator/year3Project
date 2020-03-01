@@ -24,7 +24,7 @@ def start(imgSize = 256, iTrain = True, dTrain = True, sTrain = False) :
     valDat = json.load(open('../DataSets/VIST/dii/val.description-in-isolation.json'))
 
     numTrainImages = 3781
-    numValImages = 749
+    numValImages = 405
 
     #trainDir = 'C:/Users/walto/Documents/Uni/Project/DataSets/VIST/training'
     #valDir = 'C:/Users/walto/Documents/Uni/Project/DataSets/VIST/validation'
@@ -46,7 +46,7 @@ def start(imgSize = 256, iTrain = True, dTrain = True, sTrain = False) :
     xt, yt = constructDataSet(trainDat, trainDir, imgSize, imgEnc, Dtrain, "train")
     xv, yv = constructDataSet(valDat, valDir, imgSize, imgEnc, Dtrain, "val")
 
-    sntcModel = sMod(sTrain, xt, yt, xv, yv)
+    #sntcModel = sMod(sTrain, xt, yt, xv, yv)
 
     #print('training model')
 
@@ -58,7 +58,7 @@ def start(imgSize = 256, iTrain = True, dTrain = True, sTrain = False) :
 
     #for item in trainDat
 
-def iEncoder(buildNew, imgSize, imgTAds, imgVAds, numTrainImages, numValImages, tDir, vDir, epochs = 25, batchSize = 64) :
+def iEncoder(buildNew, imgSize, imgTAds, imgVAds, numTrainImages, numValImages, tDir, vDir, epochs = 25, batchSize = 32) :
     if (buildNew) :
         autoTrainDataGen = ImageDataGenerator(rescale=1. / 255, shear_range=0.2, zoom_range=0.2)
         autoTrainGen = autoTrainDataGen.flow_from_directory(tDir, target_size=(imgSize, imgSize), batch_size=batchSize, class_mode='input')
@@ -106,6 +106,8 @@ def imageSet(data, dir, counter) :
 def constructDataSet(data, dir, s, model, buildNew, setName) :
     xString = "./Models/" + setName + "x.npy"
     yString = "./Models/" + setName + "y.npy"
+    dString = "./Models/" + setName + "dic.npy"
+    dic = {}
     if (buildNew) :
         print("Constructing dataset")
         xDat, yDat = [], []
@@ -124,10 +126,12 @@ def constructDataSet(data, dir, s, model, buildNew, setName) :
                     rep = model.predict(image)
                     xDat.append(item.get('text'))
                     yDat.append(rep[0])
+                    dic.update({str(item.get('photo_flickr_id')) : rep[0]})
                     #xDat.append(image)
         xDat, yDat = np.array(xDat), np.array(yDat, dtype="float")
         np.save(xString, xDat)
         np.save(yString, yDat)
+        np.save(dString, dic)
         return xDat, yDat
     else :
-        return np.load(xString), np.load(yString)
+        return np.load(xString), np.load(yString) # np.load(dString)

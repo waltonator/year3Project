@@ -2,6 +2,8 @@ import tensorflow as tf
 import keras
 
 from keras.models import model_from_json
+#from tf.keras.models import load_model
+#from tensorflow.keras.models import load_model
 
 def saveNet(model, dir) :
     jModel = model.to_json()
@@ -11,8 +13,9 @@ def saveNet(model, dir) :
 
 def loadNet(dir) :
     jFile = open(dir + ".json", 'r')
-    loaded = json_file.read()
+    loaded = jFile.read()
     jFile.close()
-    mod = model_from_json(loaded)
+    #mod = model_from_json(loaded)
+    mod = tf.keras.models.model_from_json(loaded)
     mod.load_weights(dir + ".h5")
     return mod
